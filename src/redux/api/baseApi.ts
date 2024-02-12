@@ -4,7 +4,7 @@ import config from '../../config';
 const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${config.URL}`,
+    baseUrl: config.URL,
     credentials: 'include',
   }),
   endpoints: () => ({}),
