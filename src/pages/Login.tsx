@@ -1,8 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Button } from 'antd';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useLoginMutation } from '../redux/features/auth/authApi';
-import { setUser } from '../redux/features/auth/authSlice';
+import { TUser, setUser } from '../redux/features/auth/authSlice';
 import { useAppDispatch } from '../redux/hooks';
 import verifyToken from '../utils/verifyToken';
 
@@ -16,18 +18,27 @@ const Login = () => {
     defaultValues: { id: 'A-0001', password: 'admin123' },
   });
 
+  const navigate = useNavigate();
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const userInfo = {
-      id: data.id,
-      password: data.password,
-    };
+    const toastId = toast.loading('Logging in');
 
-    const res = await login(userInfo).unwrap();
-    const user = verifyToken(res.data.accessToken);
-    dispatch(setUser({ user, token: res.data.accessToken }));
+    try {
+      const userInfo = {
+        id: data.id,
+        password: data.password,
+      };
+
+      const res = await login(userInfo).unwrap();
+      const user = verifyToken(res.data.accessToken) as TUser;
+      dispatch(setUser({ user, token: res.data.accessToken }));
+      navigate(`/${user.role}/dashboard`);
+      toast.success('Login success', { id: toastId, duration: 1000 });
+    } catch (error) {
+      toast.error('Login failed', { id: toastId, duration: 1000 });
+    }
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
