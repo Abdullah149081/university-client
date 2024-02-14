@@ -10,7 +10,7 @@ const MainLayout = () => {
   const dispatch = useAppDispatch();
 
   const handlerLogout = () => {
-  dispatch(logOut());
+    dispatch(logOut());
   };
   return (
     <Layout style={{ height: '100vh' }}>
