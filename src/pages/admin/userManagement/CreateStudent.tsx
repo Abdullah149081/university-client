@@ -7,7 +7,11 @@ import PHForm from '../../../components/form/PHForm';
 import PHInput from '../../../components/form/PHInput';
 import PHSelect from '../../../components/form/phSelect';
 import { bloodGroupOptions, genderOptions } from '../../../constants/global';
-import { useGetAllSemestersQuery } from '../../../redux/academicSemester/academicSemesterApi';
+import {
+  useGetAcademicDepartmentsQuery,
+  useGetAllSemestersQuery,
+} from '../../../redux/academicSemester/academicSemesterApi';
+import { useAddStudentMutation } from '../../../redux/userManagement/userManagement.api';
 import studentValidateSchema from '../../../validate/createStudent.validate';
 
 const studentDefaultValues = {
@@ -17,7 +21,7 @@ const studentDefaultValues = {
     lastName: 'Smith',
   },
   gender: 'male',
-  email: 'john@gmail.com ',
+  email: 'john@gmail.com',
 
   bloodGroup: 'A+',
 
@@ -41,16 +45,24 @@ const studentDefaultValues = {
     contactNo: '777-888-9999',
     address: '789 Pine St, Villageton',
   },
-
-  academicDepartment: '65b4acae3dc8d4f3ad83e416',
 };
 
 const CreateStudent = () => {
+  const [addStudent] = useAddStudentMutation();
   const { data: sData, isLoading: sLoading } = useGetAllSemestersQuery([]);
+
+  const { data: aData, isLoading: aLoading } = useGetAcademicDepartmentsQuery(
+    []
+  ); // { skip: false }
 
   const semesterOptions = sData?.data?.map((semester) => ({
     value: semester._id,
     label: `${semester.name} ${semester.year}`,
+  }));
+
+  const academicDepartmentOptions = aData?.data?.map((department) => ({
+    value: department._id,
+    label: department.name,
   }));
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
@@ -61,8 +73,10 @@ const CreateStudent = () => {
 
     const formData = new FormData();
 
-    formData.append('data', JSON.stringify(studentData));
-    formData.append('file', data.image);
+    formData.append('data', JSON.stringify(studentData)); // data is the key
+    formData.append('file', data.image); // file is the key
+
+    addStudent(formData);
 
     console.log(data, Object.fromEntries(formData.entries()));
   };
@@ -235,6 +249,8 @@ const CreateStudent = () => {
             </Col>
             <Col span={24} md={{ span: 12 }} lg={{ span: 8 }}>
               <PHSelect
+                options={academicDepartmentOptions || []}
+                disabled={aLoading}
                 name="academicDepartment"
                 label="Admission Department"
               />
