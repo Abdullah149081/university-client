@@ -19,3 +19,23 @@ export type TCustomMenuItem = {
   label: ReactNode;
   children?: TCustomMenuItem[];
 };
+
+// export type TRoute = {
+//   path: string;
+//   element: ReactNode;
+// };
+
+export type TSidebarItem =
+  | {
+      key: string;
+      label: ReactNode;
+      children?: TSidebarItem[];
+    }
+  | undefined;
+
+export type TUserPath = {
+  name: string;
+  path?: string;
+  element?: ReactNode;
+  children?: TUserPath[];
+};
