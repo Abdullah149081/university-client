@@ -21,7 +21,6 @@ const studentDefaultValues = {
     lastName: 'Smith',
   },
   gender: 'male',
-  email: 'john@gmail.com',
 
   bloodGroup: 'A+',
 
@@ -48,7 +47,10 @@ const studentDefaultValues = {
 };
 
 const CreateStudent = () => {
-  const [addStudent] = useAddStudentMutation();
+  const [addStudent, { data: tData, error }] = useAddStudentMutation();
+
+  console.log('🚀 ~ file: CreateStudent.tsx:51 ~ error:', error, tData);
+
   const { data: sData, isLoading: sLoading } = useGetAllSemestersQuery([]);
 
   const { data: aData, isLoading: aLoading } = useGetAcademicDepartmentsQuery(
@@ -77,8 +79,11 @@ const CreateStudent = () => {
     formData.append('file', data.image); // file is the key
 
     addStudent(formData);
-
-    console.log(data, Object.fromEntries(formData.entries()));
+    console.log(
+      '🚀 ~ file: CreateStudent.tsx:71 ~ data:',
+      data,
+      Object.fromEntries(formData.entries())
+    );
   };
 
   return (
