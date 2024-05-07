@@ -26,23 +26,23 @@ const PHForm = ({
   const formConfig: TFormConfig = {};
 
   if (defaultValues) {
-    formConfig.defaultValues = defaultValues;
+    formConfig['defaultValues'] = defaultValues;
   }
 
   if (resolver) {
-    formConfig.resolver = resolver;
+    formConfig['resolver'] = resolver;
   }
 
   const methods = useForm(formConfig);
 
-  const handleSubmit: SubmitHandler<FieldValues> = (data) => {
+  const submit: SubmitHandler<FieldValues> = (data) => {
     onSubmit(data);
     methods.reset();
   };
 
   return (
     <FormProvider {...methods}>
-      <Form layout="vertical" onFinish={methods.handleSubmit(handleSubmit)}>
+      <Form layout="vertical" onFinish={methods.handleSubmit(submit)}>
         {children}
       </Form>
     </FormProvider>

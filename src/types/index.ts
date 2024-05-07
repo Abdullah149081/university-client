@@ -1,4 +1,5 @@
+export * from './global';
+export * from './sidebar.type';
 export * from './academicManagement.type';
-export * from './global.types';
-export * from './sidebar.types';
 export * from './userManagement.type';
+export * from './courseManagement.type';

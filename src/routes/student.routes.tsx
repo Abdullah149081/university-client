@@ -1,7 +1,8 @@
+import MySchedule from '../pages/student/MySchedule';
 import OfferedCourse from '../pages/student/OfferedCourse';
 import StudentDashboard from '../pages/student/StudentDashboard';
 
-const studentPaths = [
+export const studentPaths = [
   {
     name: 'Dashboard',
     path: 'dashboard',
@@ -12,6 +13,9 @@ const studentPaths = [
     path: 'offered-course',
     element: <OfferedCourse />,
   },
+  {
+    name: 'My Schedule',
+    path: 'schedule',
+    element: <MySchedule />,
+  },
 ];
-
-export default studentPaths;

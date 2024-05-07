@@ -7,21 +7,13 @@ type TDatePickerProps = {
 };
 
 const PHDatePicker = ({ name, label }: TDatePickerProps) => {
-  const dateFormat = 'YYYY-MM-DD';
-
   return (
     <div style={{ marginBottom: '20px' }}>
       <Controller
         name={name}
-        render={({ field, fieldState: { error } }) => (
+        render={({ field }) => (
           <Form.Item label={label}>
-            <DatePicker
-              {...field}
-              size="large"
-              style={{ width: '100%' }}
-              format={dateFormat}
-            />
-            {error && <small style={{ color: 'red' }}>{error.message}</small>}
+            <DatePicker {...field} size="large" style={{ width: '100%' }} />
           </Form.Item>
         )}
       />

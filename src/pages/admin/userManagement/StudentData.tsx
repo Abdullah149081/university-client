@@ -1,10 +1,15 @@
-import { Button, Pagination, Space, Table, TableColumnsType } from 'antd';
+import {
+  Button,
+  Pagination,
+  Space,
+  Table,
+  TableColumnsType,
+  TableProps,
+} from 'antd';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-
 import { TQueryParam, TStudent } from '../../../types';
-
-import { useGetAllStudentsQuery } from '../../../redux/userManagement/userManagement.api';
+import { useGetAllStudentsQuery } from '../../../redux/features/admin/userManagement.api';
+import { Link } from 'react-router-dom';
 
 export type TTableData = Pick<
   TStudent,
@@ -12,7 +17,7 @@ export type TTableData = Pick<
 >;
 
 const StudentData = () => {
-  const [params] = useState<TQueryParam[]>([]);
+  const [params, setParams] = useState<TQueryParam[]>([]);
   const [page, setPage] = useState(1);
   const {
     data: studentData,
@@ -67,7 +72,7 @@ const StudentData = () => {
         console.log(item);
         return (
           <Space>
-            <Link to={`/admin/dashboard/student-data/${item.key}`}>
+            <Link to={`/admin/student-data/${item.key}`}>
               <Button>Details</Button>
             </Link>
             <Button>Update</Button>
@@ -79,12 +84,34 @@ const StudentData = () => {
     },
   ];
 
+  const onChange: TableProps<TTableData>['onChange'] = (
+    _pagination,
+    filters,
+    _sorter,
+    extra
+  ) => {
+    if (extra.action === 'filter') {
+      const queryParams: TQueryParam[] = [];
+
+      filters.name?.forEach((item) =>
+        queryParams.push({ name: 'name', value: item })
+      );
+
+      filters.year?.forEach((item) =>
+        queryParams.push({ name: 'year', value: item })
+      );
+
+      setParams(queryParams);
+    }
+  };
+
   return (
     <>
       <Table
         loading={isFetching}
         columns={columns}
         dataSource={tableData}
+        onChange={onChange}
         pagination={false}
       />
       <Pagination

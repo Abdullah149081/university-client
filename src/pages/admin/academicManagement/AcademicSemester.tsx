@@ -1,18 +1,23 @@
 import { Button, Table, TableColumnsType, TableProps } from 'antd';
+import { useGetAllSemestersQuery } from '../../../redux/features/admin/academicManagement.api';
+import { TAcademicSemester } from '../../../types/academicManagement.type';
 import { useState } from 'react';
-import { monthNames } from '../../../constants/global';
-import { useGetAllSemestersQuery } from '../../../redux/academicSemester/academicSemesterApi';
-import { TAcademicSemester, TQueryParam } from '../../../types';
+import { TQueryParam } from '../../../types';
 
-type TDataType = Pick<
+export type TTableData = Pick<
   TAcademicSemester,
   'name' | 'year' | 'startMonth' | 'endMonth'
->; // Pick the fields that you want to display in the table
+>;
 
 const AcademicSemester = () => {
-  const [param, setParam] = useState<TQueryParam[]>([]);
+  const [params, setParams] = useState<TQueryParam[] | undefined>(undefined);
+  const {
+    data: semesterData,
+    isLoading,
+    isFetching,
+  } = useGetAllSemestersQuery(params);
 
-  const { data: semesterData, isFetching } = useGetAllSemestersQuery(param);
+  console.log({ isLoading, isFetching });
 
   const tableData = semesterData?.data?.map(
     ({ _id, name, startMonth, endMonth, year }) => ({
@@ -24,24 +29,10 @@ const AcademicSemester = () => {
     })
   );
 
-  // Remove duplicate years from the data and create an array of unique years for the filter dropdown options
-  const uniqueYears = Array.from(
-    new Set(tableData?.map((data) => data.year) || [])
-  );
-
-  const yearFilters = uniqueYears.map((year) => ({
-    text: year,
-    value: year,
-  }));
-
-  const monthFilters = monthNames.map((month) => ({
-    text: month,
-    value: month,
-  }));
-
-  const columns: TableColumnsType<TDataType> = [
+  const columns: TableColumnsType<TTableData> = [
     {
       title: 'Name',
+      key: 'name',
       dataIndex: 'name',
       filters: [
         {
@@ -60,60 +51,64 @@ const AcademicSemester = () => {
     },
     {
       title: 'Year',
+      key: 'year',
       dataIndex: 'year',
-      filters: yearFilters,
+      filters: [
+        {
+          text: '2024',
+          value: '2024',
+        },
+        {
+          text: '2025',
+          value: '2025',
+        },
+        {
+          text: '2026',
+          value: '2026',
+        },
+      ],
     },
     {
       title: 'Start Month',
+      key: 'startMonth',
       dataIndex: 'startMonth',
-      filters: monthFilters,
     },
     {
       title: 'End Month',
+      key: 'endMonth',
       dataIndex: 'endMonth',
-      filters: monthFilters,
     },
-
     {
       title: 'Action',
-      key: 'action',
-      render: () => (
-        <div>
-          <Button type="primary">Edit</Button>
-          <Button type="primary" danger style={{ marginLeft: 8 }}>
-            Delete
-          </Button>
-        </div>
-      ),
+      key: 'x',
+      render: () => {
+        return (
+          <div>
+            <Button>Update</Button>
+          </div>
+        );
+      },
     },
   ];
 
-  const onChange: TableProps<TDataType>['onChange'] = (
-    pagination,
+  const onChange: TableProps<TTableData>['onChange'] = (
+    _pagination,
     filters,
-    sorter,
+    _sorter,
     extra
   ) => {
     if (extra.action === 'filter') {
-      const filterParams: TQueryParam[] = [];
+      const queryParams: TQueryParam[] = [];
 
-      filters.name?.forEach((name) => {
-        filterParams.push({ name: 'name', value: name as string });
-      });
+      filters.name?.forEach((item) =>
+        queryParams.push({ name: 'name', value: item })
+      );
 
-      filters.year?.forEach((year) => {
-        filterParams.push({ name: 'year', value: year as string });
-      });
+      filters.year?.forEach((item) =>
+        queryParams.push({ name: 'year', value: item })
+      );
 
-      filters.startMonth?.forEach((startMonth) => {
-        filterParams.push({ name: 'startMonth', value: startMonth as string });
-      });
-
-      filters.endMonth?.forEach((endMonth) => {
-        filterParams.push({ name: 'endMonth', value: endMonth as string });
-      });
-
-      setParam(filterParams);
+      setParams(queryParams);
     }
   };
 
