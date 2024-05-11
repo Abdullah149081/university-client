@@ -1,10 +1,11 @@
 import { Layout, Menu } from 'antd';
-import { currentUser } from '../../redux/features/auth/authSlice';
+import { TUser, currentUser, useCurrentToken } from '../../redux/features/auth/authSlice';
 import { useAppSelector } from '../../redux/hooks';
 import adminPaths from '../../routes/admin.routes';
 import facultyPaths from '../../routes/faculty.routes';
 import studentPaths from '../../routes/student.routes';
 import generateMenuItems from '../../utils/menuItemsGenerator';
+import verifyToken from '../../utils/verifyToken';
 
 const { Sider } = Layout;
 
@@ -15,11 +16,19 @@ const userRole = {
 };
 
 const Sidebar = () => {
-  const user = useAppSelector(currentUser);
+
+  const token = useAppSelector(useCurrentToken);
+
+  let user;
+
+  if (token) {
+    user = verifyToken(token);
+  }
+
 
   let sidebarItems;
 
-  switch (user!.role) {
+  switch ((user as TUser)!.role) {
     case userRole.ADMIN:
       sidebarItems = generateMenuItems(adminPaths, userRole.ADMIN);
       break;
